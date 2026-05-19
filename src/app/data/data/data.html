@@ -1,0 +1,12 @@
+<div>
+  <p *ngIf="errors$ | async as errors">{{errors}}</p>
+  <ng-container *ngIf="posts$ | async as posts">
+    <p *ngIf="posts.loading">Loading</p>
+    <app-field
+      *ngFor="let post of posts.posts;index as i; trackBy: trackById"
+      [value]="i+1 + '. userId: ' +post.userId +' ;title: '+(post.title | textTransformPipe : 'g' :'o')"
+      (clicked)="onClick($event)"
+    ></app-field>
+  </ng-container>
+  <!--<app-field *ngFor="let val of valuec;index as i" [value]="i+1 + ' ' + val.text"></app-field>-->
+</div>

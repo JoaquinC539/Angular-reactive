@@ -1,0 +1,42 @@
+<form id="mainCatalog" [formGroup]="mainForm" (submit)="updateMainCatalog($event)">
+  <label for="animal">Select animal</label>
+  <select name="animal" formControlName="animal" id="animal">
+    <option
+      *ngFor="let option of (mainCatalogList$ |async);trackBy:trackByValue"
+      [value]="option.value"
+    >
+      {{option.label}}
+    </option>
+  </select>
+  <button type="submit">Send</button>
+</form>
+
+<form
+  id="subCatalog"
+  (submit)="updateSubCatalog($event)"
+  *ngIf="mainSelection"
+  [formGroup]="subForm"
+>
+  <label for="sub">Select sub</label>
+  <select name="sub" formControlName="sub" id="sub">
+    <option
+      *ngFor="let option of (subCatalogList$ |async);trackBy:trackByValue"
+      [value]="option.value"
+    >
+      {{option.label}}
+    </option>
+  </select>
+  <button type="submit">Send</button>
+</form>
+<ng-container *ngIf="secondSelection ">
+  <pre *ngIf="tableData$ |async as table ">{{table | json}}</pre>
+</ng-container>
+<p *ngIf="loading">Loader general...</p>
+<hr />
+<ng-container *ngIf="t$ |async as state">
+  <div *ngIf="state.loading">Loading...</div>
+  <div>{{state.test}}</div>
+  <div *ngIf="state.data.length>0">
+    <pre>{{state.data | json}}</pre>
+  </div>
+</ng-container>
