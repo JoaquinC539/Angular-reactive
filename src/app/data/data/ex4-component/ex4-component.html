@@ -1,0 +1,26 @@
+Ex4
+<form id="mainCatalog" [formGroup]="mainForm" (submit)="submitMainSelection($event)">
+  <label for="animal">Select animal</label>
+  <select name="animal" formControlName="animal" id="animal">
+    @for(option of mainCatalogResource.value();track option.value){
+    <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+  <button type="submit">Send</button>
+</form>
+@if(mainSelection()!==null){
+<br />
+<form id="subCatalog" [formGroup]="subForm" (submit)="submitSecondSelection($event)">
+  <label for="sub">Select sub</label>
+  <select name="sub" formControlName="sub" id="sub">
+    @for(option of subCatalogResource.value();track option.value){
+    <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+  <button type="submit">Send</button>
+</form>
+@if(tableDataResource.value() ; as data){
+<pre>{{data | json}}</pre>
+} } @if(loading()){
+<p>Loading...</p>
+}

@@ -8,14 +8,20 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Field {
+  private _value: string = '';
   @Input()
-  public value: string;
+  public set value(value: string) {
+    // console.log('setting');
+    this._value = value;
+  }
+  public get value() {
+    // console.log('getting');
+    return this._value;
+  }
   @Output()
   public clicked = new EventEmitter<string>();
 
-  constructor() {
-    this.value = '';
-  }
+  constructor() {}
   onClicked() {
     this.clicked.emit(this.value.toUpperCase());
   }

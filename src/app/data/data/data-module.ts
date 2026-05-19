@@ -7,16 +7,18 @@ import { ExComponent } from './ex-component/ex-component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Ex2Component } from './ex2-component/ex2-component';
 import { Ex3Component } from './ex3-component/ex3-component';
+import { Ex4Component } from './ex4-component/ex4-component';
 
 const dataRoutes: Routes = [
   { path: '', component: Data },
   { path: 'ex', component: ExComponent },
   { path: 'ex2', component: Ex2Component },
   { path: 'ex3', component: Ex3Component },
+  { path: 'ex4', component: Ex4Component },
 ];
 
 @NgModule({
-  declarations: [Data, ExComponent, Ex2Component, Ex3Component],
+  declarations: [Data, ExComponent, Ex2Component, Ex3Component, Ex4Component],
   imports: [CommonModule, RouterModule.forChild(dataRoutes), GeneralModule, ReactiveFormsModule],
   providers: [],
   // bootstrap: [Data],
