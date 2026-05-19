@@ -1,0 +1,27 @@
+Ex3
+<form id="mainCatalog" [formGroup]="mainForm" (submit)="submitMainSelection($event)">
+  <label for="animal">Select animal</label>
+  <select name="animal" formControlName="animal" id="animal">
+    @for(option of mainCatalog();track option.value){
+    <option [value]="option.value">{{option.label}}</option>
+    }
+  </select>
+  <button type="submit">Send</button>
+</form>
+
+@if(mainSelection()!==null){
+<br />
+<form id="subCatalog" [formGroup]="subForm" (submit)="submitSecondSelection($event)">
+  <label for="sub">Select sub</label>
+  <select name="sub" formControlName="sub" id="sub">
+    @for( option of secondCatalog();track option.value){
+    <option [value]="option.value">{{option.label}}</option>
+    }
+  </select>
+  <button type="submit">Send</button>
+</form>
+} @if(tableData()){
+<pre>{{tableData() | json}}</pre>
+} @if(loading()){
+<p>Loading...</p>
+}
