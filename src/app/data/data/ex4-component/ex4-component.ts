@@ -57,6 +57,7 @@ export class Ex4Component {
   constructor() {
     effect(() => {
       console.log(this.mainSelection(), this.secondSelection());
+      console.log(this.tableDataResource.value());
     });
   }
 

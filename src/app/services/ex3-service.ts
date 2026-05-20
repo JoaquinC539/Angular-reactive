@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, of, delay, lastValueFrom } from 'rxjs';
+import { of, delay, lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

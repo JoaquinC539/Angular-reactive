@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import {
   Observable,
@@ -22,6 +22,7 @@ interface OptionsSelect {
   standalone: false,
   templateUrl: './ex2-component.html',
   styleUrl: './ex2-component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Ex2Component implements OnInit, OnDestroy {
   private loadCatalogSubject = new BehaviorSubject<void>(undefined);

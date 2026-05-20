@@ -1,1 +1,7 @@
-<p><span>{{value}}</span> - <button (click)="onClicked()">Click me</button></p>
+<p>
+  <span>{{value}}</span> - <button (click)="onClicked()">Click me</button> -
+  <button (click)="onPost()">Mandar Post</button>
+  <ng-container *ngIf="notification$ | async as notification"
+    ><span> - Post enviado: {{notification}}</span>
+  </ng-container>
+</p>
