@@ -11,6 +11,7 @@ import {
   combineLatest,
   catchError,
   of,
+  filter,
 } from 'rxjs';
 import { Ex2Service } from '../../../services/ex2-service';
 interface OptionsSelect {
@@ -36,18 +37,23 @@ export class Ex2Component implements OnInit, OnDestroy {
   subForm = new FormGroup({
     sub: new FormControl(''),
   });
+  public mainSelection$: Observable<string | null>;
+  public secondSelction$: Observable<string | null>;
   public mainCatalog$: Observable<any[]>;
   public secondCatalog$: Observable<any[] | null>;
   public tableData$: Observable<any[] | null>;
   constructor(private ex2Service: Ex2Service) {
+    this.mainSelection$ = ex2Service.mainSelection$;
+    this.secondSelction$ = ex2Service.secondSelection$;
     this.loading = true;
     this.mainCatalog$ = this.loadCatalogSubject.pipe(
       takeUntil(this.destroysub),
       switchMap(() => ex2Service.getMainCatalog()),
       tap(() => (this.loading = false)),
     );
-    this.secondCatalog$ = this.ex2Service.mainSelection$.pipe(
+    this.secondCatalog$ = this.mainSelection$.pipe(
       takeUntil(this.destroysub),
+      filter(Boolean),
       switchMap((mainValue) => ex2Service.getSubCatalog(mainValue as string).pipe(startWith(null))),
       tap((d) => {
         if (d) {
@@ -55,9 +61,8 @@ export class Ex2Component implements OnInit, OnDestroy {
         }
       }),
     );
-    this.tableData$ = combineLatest([ex2Service.mainSelection$, ex2Service.secondSelection$]).pipe(
+    this.tableData$ = combineLatest([this.mainSelection$, this.secondSelction$]).pipe(
       takeUntil(this.destroysub),
-
       switchMap(([main, sub]) =>
         ex2Service.getTableData(main as string, sub as string).pipe(startWith(null)),
       ),
@@ -73,6 +78,7 @@ export class Ex2Component implements OnInit, OnDestroy {
     this.loadCatalogSubject.next();
   }
   ngOnDestroy(): void {
+    this.ex2Service.updateMainSelection('');
     this.destroysub.next();
     this.destroysub.complete();
   }
@@ -82,9 +88,8 @@ export class Ex2Component implements OnInit, OnDestroy {
   selectMainCatalog($event: SubmitEvent) {
     $event.preventDefault();
     this.loading = true;
-    this.mainSelection = true;
-    this.secondSelection = false;
     this.ex2Service.updateMainSelection(this.mainForm.value.animal!);
+    this.ex2Service.updateSecondSeletcion('');
   }
   selectSubcatalog($event: SubmitEvent) {
     $event.preventDefault();

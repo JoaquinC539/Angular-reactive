@@ -12,9 +12,15 @@ Ex2
   <button type="submit">Send</button>
 </form>
 <br />
-<form
+<!--<form
   id="subCatalog"
   *ngIf="mainSelection"
+  [formGroup]="subForm"
+  (submit)="selectSubcatalog($event)"
+>-->
+<form
+  id="subCatalog"
+  *ngIf="mainSelection$ | async"
   [formGroup]="subForm"
   (submit)="selectSubcatalog($event)"
 >
@@ -29,7 +35,7 @@ Ex2
   </select>
   <button type="submit">Send</button>
 </form>
-<ng-container *ngIf="mainSelection && secondSelection">
+<ng-container *ngIf="(mainSelection$ | async) && (secondSelction$ | async)">
   <pre *ngIf="tableData$ |async  as tableData">{{tableData | json}}</pre>
 </ng-container>
 <p *ngIf="loading">Loading...</p>
