@@ -1,5 +1,18 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, delay, filter, map, of, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  delay,
+  filter,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -48,12 +61,11 @@ export class ExService {
     { d1: 'v1', d2: 'v2', d3: 'v3' },
     { e1: 'v1', e2: 'v2', e3: 'v3' },
   ];
-  private mainCatalogSub: BehaviorSubject<any[] | null> = new BehaviorSubject<any[] | null>(null);
-  public mainCatalog$ = this.mainCatalogSub.asObservable();
-  private secondCatalogSub: BehaviorSubject<any[] | null> = new BehaviorSubject<any[] | null>(null);
-  public secondCatalog$ = this.secondCatalogSub.asObservable();
-  private tableDataSub = new BehaviorSubject<any[] | null>(null);
-  public tableData$ = this.tableDataSub.asObservable();
+  private mainStaterSub: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
+  public mainCatalog$: Observable<any[] | null>;
+  public secondCatalog$: Observable<any[] | null>;
+  public tableDataSub = new BehaviorSubject<any[] | null>(null);
+  public tableData$: Observable<any[] | null> = this.tableDataSub.asObservable();
   private mainSelectionSub: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(
     null,
   );
@@ -63,44 +75,60 @@ export class ExService {
   );
   public secondSelection$ = this.secondSelectionSub.asObservable();
 
-  constructor() {}
-
-  public getMainCatalog() {
-    of(this.catalog1)
-      .pipe(delay(1000))
-      .subscribe((catalog) => {
-        this.mainCatalogSub.next(catalog);
+  constructor() {
+    this.mainCatalog$ = this.mainStaterSub.pipe(
+      switchMap(() => this.fetchMainCatalog()),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.secondCatalog$ = this.mainSelection$.pipe(
+      filter((main) => main !== null),
+      switchMap((mainSelection: string) =>
+        this.fetchSecondCatalog(mainSelection).pipe(startWith(null)),
+      ),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    combineLatest([this.mainSelection$, this.secondSelection$])
+      .pipe(
+        filter(([main, second]) => main !== null && second !== null),
+        switchMap(([main, second]) => this.fetchTableData(main!, second!).pipe(startWith(null))),
+      )
+      .subscribe((data) => {
+        this.tableDataSub.next(data);
       });
+  }
+
+  private fetchMainCatalog() {
+    console.log('fetch main');
+    return of(this.catalog1).pipe(delay(1000));
+  }
+  private fetchSecondCatalog(mainSelection: string) {
+    return of(this.getcatalog2(mainSelection)).pipe(delay(1500));
+  }
+  private fetchTableData(mainSelection: string, secondSelection: string) {
+    console.log('get3', mainSelection, secondSelection);
+    return of(this.tabla).pipe(delay(2300));
+  }
+  public getMainCatalog() {
+    console.log('init');
+    this.mainStaterSub.next();
   }
   public getSecondCatalog(value: string) {
     console.log('get2', value);
+    this.clearSecondCatalog();
     this.mainSelectionSub.next(value);
-    of(this.getcatalog2(value))
-      .pipe(delay(1500))
-      .subscribe((catalog2) => {
-        this.secondCatalogSub.next(catalog2);
-      });
   }
   clearSecondCatalog() {
-    this.secondCatalogSub.next(null);
     this.secondSelectionSub.next(null);
   }
   getTableData(secondValue: string) {
     this.secondSelectionSub.next(secondValue);
-    const mainVal = this.mainSelectionSub.getValue();
-    console.log('get3', mainVal, secondValue);
-    of(this.tabla)
-      .pipe(delay(2300))
-      .subscribe((data) => this.tableDataSub.next(data));
   }
   clearTableData() {
     this.tableDataSub.next(null);
   }
   clearAll() {
-    this.mainCatalogSub.next(null);
-    this.secondCatalogSub.next(null);
+    this.clearTableData();
     this.mainSelectionSub.next(null);
     this.secondSelectionSub.next(null);
-    this.tableDataSub.next(null);
   }
 }

@@ -33,6 +33,8 @@ export class ExComponent implements OnInit, OnDestroy {
   });
   mainSelection: boolean = false;
   secondSelection: boolean = false;
+  mainSelection$: Observable<string | null>;
+  secondSelection$: Observable<string | null>;
   subForm = new FormGroup({
     sub: new FormControl(''),
   });
@@ -42,12 +44,11 @@ export class ExComponent implements OnInit, OnDestroy {
 
   constructor(private exService: ExService) {
     this.loading = true;
+    this.mainSelection$ = exService.mainSelection$;
+    this.secondSelection$ = exService.secondSelection$;
     this.mainOptions$ = exService.mainCatalog$.pipe(
-      takeUntil(this.destroysub),
-      filter((data) => data !== null),
-      tap(() => {
-        this.loading = false;
-      }),
+      filter((d) => d !== null),
+      tap(() => (this.loading = false)),
     );
     this.secondOptions$ = exService.secondCatalog$.pipe(
       takeUntil(this.destroysub),
@@ -82,10 +83,6 @@ export class ExComponent implements OnInit, OnDestroy {
   submitMainCatalog(e: SubmitEvent) {
     e.preventDefault();
     console.log('submit 1', this.mainForm.value.animal);
-    this.exService.clearSecondCatalog();
-    this.exService.clearTableData();
-    this.mainSelection = true;
-    this.secondSelection = false;
     this.loading = true;
     this.exService.getSecondCatalog(this.mainForm.value.animal!);
   }
@@ -93,7 +90,7 @@ export class ExComponent implements OnInit, OnDestroy {
     e.preventDefault();
     console.log('submit 2', this.subForm.value.sub);
     this.exService.clearTableData();
-    this.secondSelection = true;
+    // this.secondSelection = true;
     this.loading = true;
     this.exService.getTableData(this.subForm.value.sub!);
   }
